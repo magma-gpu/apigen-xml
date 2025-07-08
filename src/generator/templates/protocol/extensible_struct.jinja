@@ -1,0 +1,16 @@
+{% set collection = def.ExtensibleStructs %}
+{% for s in collection.structs -%}
+#[derive(Debug, Default, Copy, Clone, FromBytes, IntoBytes, Immutable)]
+#[repr(C)]
+pub struct {{ s.name }} {
+    {% for member in collection.protocol_struct.members -%}
+    pub {{ member.name }}: {{ member.type_name }},
+    {% endfor %}
+    {% for member in s.members -%}
+    pub {{ member.name }}: {{ member.type_name }},
+    {% endfor -%}
+    {% if s.padding -%}
+    pub {{ s.padding.name }}: {{ s.padding.type_name }},
+    {% endif %}
+}
+{% endfor %}

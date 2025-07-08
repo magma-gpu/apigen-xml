@@ -1,0 +1,12 @@
+{%- set proto = def.Protocol -%}
+{%- set enum_name = proto.name | pascal_case ~ "Opcode" -%}
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
+pub enum {{ enum_name }} {
+{%- for req in proto.requests %}
+    {{ req.opcode.name | pascal_case }} = {{ req.opcode.value }},
+{%- endfor -%}
+{% for resp in proto.responses %}
+    {{ resp.opcode.name | pascal_case }} = {{ resp.opcode.value }},
+{%- endfor %}
+}
