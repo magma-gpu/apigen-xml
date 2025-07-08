@@ -1,0 +1,41 @@
+{% for c in def.constants -%}
+#define {{ c.name }} {{ c.value }}
+{% endfor %}
+
+{% for e in def.enums -%}
+typedef enum {{ e.name }} {
+    {% for entry in e.entries -%}
+    {{ entry.name }} = {{ entry.value }},
+    {% endfor %}
+} {{ e.name }};
+{% endfor %}
+
+{% for s in def.structs -%}
+typedef struct {{ s.name }} {
+    {% for member in s.members -%}
+    {{ member.type_name }} {{ member.name }};
+    {% endfor %}
+} {{ s.name }};
+{% endfor %}
+
+{% for s in def.extensible_structs -%}
+typedef struct {{ s.name }} {
+    {{ s.stype }} stype;
+    const void* pNext;
+    {% for member in s.members -%}
+    {{ member.type_name }} {{ member.name }};
+    {% endfor %}
+} {{ s.name }};
+{% endfor %}
+
+{% for o in def.objects -%}
+typedef struct {{ o.ffi }}_T* {{ o.ffi }};
+{% endfor %}
+
+{% for f in def.functions -%}
+{{ f.ret }} {{ f.name }}(
+    {% for member in f.members -%}
+    {{ member.qualifier }} {{ member.type_name }} {{ member.name }}{{ "," if not loop.last }}
+    {% endfor %}
+);
+{% endfor %}

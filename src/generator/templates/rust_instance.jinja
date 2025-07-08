@@ -1,0 +1,45 @@
+{% for c in def.constants -%}
+pub const {{ c.name }}: {{ c.type_name }} = {{ c.value }};
+{% endfor %}
+
+{% for e in def.enums -%}
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
+#[repr({{ e.type_name }})]
+pub enum {{ e.name }} {
+    {% for entry in e.entries -%}
+    {{ entry.name }} = {{ entry.value }},
+    {% endfor %}
+}
+{% endfor %}
+
+{% for s in def.structs -%}
+#[derive(Debug, Copy, Clone)]
+#[repr(C)]
+pub struct {{ s.name }}<'a> {
+    {% for member in s.members -%}
+    pub {{ member.name }}: {{ member.type_name }},
+    {% endfor %}
+    pub _marker: PhantomData<&'a ()>,
+}
+
+impl<'a> Default for {{ s.name }}<'a> {
+    fn default() -> Self {
+        Self {
+            {% for member in s.members -%}
+            {{ member.name }}: Default::default(),
+            {% endfor -%}
+            _marker: PhantomData,
+        }
+    }
+}
+
+impl<'a> {{ s.name }}<'a> {
+    {% for member in s.members -%}
+    #[inline]
+    pub fn {{ member.name }}(mut self, {{ member.name }}: {{ member.type_name }}) -> Self {
+        self.{{ member.name }} = {{ member.name }};
+        self
+    }
+    {% endfor %}
+}
+{% endfor %}

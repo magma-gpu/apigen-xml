@@ -1,0 +1,53 @@
+{% for c in def.constants -%}
+pub const {{ c.name }}: {{ c.type_name }} = {{ c.value }};
+{% endfor %}
+
+{% for e in def.enums -%}
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
+#[repr({{ e.type_name }})]
+pub enum {{ e.name }} {
+    {% for entry in e.entries -%}
+    {{ entry.name }} = {{ entry.value }},
+    {% endfor %}
+}
+{% endfor %}
+
+{% for s in def.structs -%}
+#[derive(Debug, Default, Clone, Copy)]
+#[repr(C)]
+pub struct {{ s.name }} {
+    {% for member in s.members -%}
+    pub {{ member.name }}: {{ member.type_name }},
+    {% endfor %}
+}
+{% endfor %}
+
+{% for proto in def.protocols -%}
+{% set header_name = proto.name | pascal_case ~ "CommandHdr" -%}
+#[repr(C)]
+#[derive(Default, Debug, Clone, Copy, FromBytes, IntoBytes, Immutable)]
+pub struct {{ header_name }} {
+    pub proto: u32,
+    pub size: u32,
+}
+
+{% for cmd in proto.commands -%}
+{% set cmd_struct_name = cmd.opcode | pascal_case ~ "Cmd" -%}
+{% set current_size = 8 -%}
+{% for member in cmd.members -%}
+{% set current_size = current_size + type_sizes[member.type_name] -%}
+{% endfor -%}
+{% set padding = (8 - (current_size % 8)) % 8 %}
+
+#[derive(Default, Debug, Clone, Copy, FromBytes, IntoBytes, Immutable)]
+pub struct {{ cmd_struct_name }} {
+    pub hdr: {{ header_name }},
+    {% for member in cmd.members -%}
+    pub {{ member.name }}: {{ member.type_name }},
+    {% endfor %}
+    {% if padding > 0 -%}
+    pub padding: [u8; {{ padding }}],
+    {% endif %}
+}
+{% endfor %}
+{% endfor %}

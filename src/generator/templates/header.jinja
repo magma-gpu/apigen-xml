@@ -1,0 +1,20 @@
+{% include "copyright.jinja" %}
+
+#ifndef MESA_MAGMA_GENERATED_H
+#define MESA_MAGMA_GENERATED_H
+
+#include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+{% for def in defs %}
+{% include "header_instance.jinja" %}
+{% endfor %}
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* MESA_MAGMA_GENERATED_H */

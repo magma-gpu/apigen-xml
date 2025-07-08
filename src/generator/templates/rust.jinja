@@ -1,0 +1,7 @@
+{% include "copyright.jinja" %}
+
+use core::marker::PhantomData;
+
+{% for def in defs %}
+{% include "rust_instance.jinja" %}
+{% endfor %}

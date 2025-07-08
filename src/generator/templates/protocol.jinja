@@ -1,0 +1,9 @@
+{% include "copyright.jinja" %}
+
+use zerocopy::FromBytes;
+use zerocopy::Immutable;
+use zerocopy::IntoBytes;
+
+{% for def in defs %}
+{% include "protocol_instance.jinja" %}
+{% endfor %}

@@ -1,0 +1,16 @@
+{% include "copyright.jinja" %}
+
+#![allow(non_camel_case_types)]
+#![allow(non_snake_case)]
+
+use std::ffi::c_void;
+use std::panic::{catch_unwind, AssertUnwindSafe};
+use libc;
+
+{% for i in gen_file.includes %}
+use {{ i }};
+{% endfor %}
+
+{% for def in defs %}
+{% include "ffi_instance.jinja" %}
+{% endfor %}
