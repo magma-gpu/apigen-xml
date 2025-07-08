@@ -1,0 +1,21 @@
+{% set f = def.Function %}
+#[no_mangle]
+pub unsafe extern "C" fn {{ f.name }}(
+    {% for member in f.members -%}
+    {{ member.name }}: {{ member.qualifier }} {{ member.type_name }}{{ "," if not loop.last }}
+    {% endfor %}
+) -> {{ f.ret }} {
+    let result = catch_unwind(AssertUnwindSafe(|| {
+        // This is where the actual safe Rust implementation would be called.
+        // Since we are just generating the FFI layer, we'll panic as a placeholder.
+        panic!("Safe implementation for {{ f.name }} not implemented");
+    }));
+
+    {% if f.ret is startingwith("*mut") -%}
+    result.unwrap_or(std::ptr::null_mut())
+    {% elif f.ret == "i8" or f.ret == "i16" or f.ret == "i32" or f.ret == "i64" -%}
+    result.unwrap_or(-libc::ESRCH)
+    {% else -%}
+    result.unwrap_or(Default::default())
+    {% endif %}
+}

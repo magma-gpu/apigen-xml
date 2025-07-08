@@ -1,0 +1,38 @@
+{% include "copyright.jinja" %}
+
+#ifndef MESA_MAGMA_GENERATED_H
+#define MESA_MAGMA_GENERATED_H
+
+#include <stdint.h>
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+{% for def in defs %}
+{% if def.Constant %}
+{% include "header/constant.jinja" %}
+{% elif def.Enum %}
+{% include "header/enum.jinja" %}
+{% elif def.ExtensibleStructs %}
+{% set collection = def.ExtensibleStructs %}
+typedef enum {{ collection.name }} {
+    {% for s in collection.structs -%}
+    {{ s.stype.name }} = {{ s.stype.value }},
+    {% endfor %}
+} {{ collection.name }};
+{% include "header/extensible_struct.jinja" %}
+{% elif def.Struct %}
+{% include "header/struct.jinja" %}
+{% elif def.Object %}
+{% include "header/object.jinja" %}
+{% elif def.Function %}
+{% include "header/function.jinja" %}
+{% endif %}
+{% endfor %}
+
+#ifdef __cplusplus
+}
+#endif
+
+#endif /* MESA_MAGMA_GENERATED_H */

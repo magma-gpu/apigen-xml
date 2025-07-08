@@ -1,0 +1,40 @@
+{% include "copyright.jinja" %}
+
+use crate::ipc::{Reader, DecodeError};
+
+{% for def_name in generated_file.instantiations -%}
+{%- set def = api.definitions[def_name] -%}
+{%- for item_name in def.items -%}
+{%- set item = api.definition_items[item_name] -%}
+{%- if item.Protocol is defined -%}
+{%- set proto = item.Protocol -%}
+pub enum {{ proto.name | pascal_case }}Protocol {
+    {%- for request in proto.requests %}
+    {{ request.opcode.name }}
+        {%- set members = request.members | selectattr("hdr") | list -%}
+        {% if members | length > 0 %}
+            ({{ members | map(attribute='type_name') | join(', ') }})
+        {% endif %},
+    {%- endfor %}
+}
+
+pub fn decode(reader: &mut Reader) -> Result<{{ proto.name | pascal_case }}Protocol, DecodeError> {
+    let opcode = reader.read_u32()?;
+    match opcode {
+        {% for request in proto.requests %}
+        {{ request.opcode.value }} => {
+            {% set members = request.members | selectattr("hdr") | list %}
+            {% if members | length > 0 %}
+            let member = {{ members[0].type_name }}::decode(reader)?;
+            Ok({{ proto.name | pascal_case }}Protocol::{{ request.opcode.name }}(member))
+            {% else %}
+            Ok({{ proto.name | pascal_case }}Protocol::{{ request.opcode.name }})
+            {% endif %}
+        }
+        {% endfor %}
+        _ => Err(DecodeError::InvalidOpcode),
+    }
+}
+{% endif -%}
+{%- endfor -%}
+{%- endfor -%}

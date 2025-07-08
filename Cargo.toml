@@ -1,0 +1,18 @@
+[package]
+name = "apigen-xml"
+version = "0.1.0"
+authors = ["magma-gpu project"]
+edition = "2021"
+description = "Generate APIs from XML description"
+license = "MIT"
+
+[dependencies]
+clap = { version = "4.5.4", features = ["derive"] }
+libc = "0.2"
+minijinja = { version = "1.0", features = ["loader"] }
+serde = { version = "1.0", features = ["derive"] }
+xml-rs = "0.8"
+thiserror = "1.0.23"
+zerocopy = { version = "0.8.13", features = ["derive"] }
+bitflags = "2.5.0"
+regex = "1.11.2"

@@ -1,0 +1,6 @@
+{% set s = def.Struct %}
+typedef struct {{ s.name }} {
+    {% for member in s.members -%}
+    {{ member.type_name }} {{ member.name }};
+    {% endfor %}
+} {{ s.name }};

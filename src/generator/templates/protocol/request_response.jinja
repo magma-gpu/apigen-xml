@@ -1,0 +1,23 @@
+{% set proto = def.Protocol %}
+{% for req in proto.requests -%}
+{% set variant_name = req.opcode.name | pascal_case -%}
+{% set req_struct_name = variant_name ~ "Req" -%}
+#[derive(Default, Debug, Clone, Copy, FromBytes, IntoBytes, Immutable)]
+pub struct {{ req_struct_name }} {
+    {%- for member in req.members %}
+    pub {{ member.name }}: {{ member.type_name }},
+    {%- endfor %}
+}
+
+{% endfor %}
+{%- for resp in proto.responses -%}
+{% set variant_name = resp.opcode.name | pascal_case -%}
+{% set resp_struct_name = variant_name ~ "Resp" -%}
+#[derive(Default, Debug, Clone, Copy, FromBytes, IntoBytes, Immutable)]
+pub struct {{ resp_struct_name }} {
+    {%- for member in resp.members %}
+    pub {{ member.name }}: {{ member.type_name }},
+    {%- endfor %}
+}
+
+{% endfor -%}

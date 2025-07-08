@@ -1,0 +1,357 @@
+<?xml version="1.0"?>
+<?Vxml version="1.0" encoding="UTF-8"?>
+<api name="magma">
+  <copyright>
+    <spdx> MIT </spdx>
+    <holder> Google </holder>
+    <year> 2025 </year>
+  </copyright>
+  <version> 1 </version>
+  <define>
+    <name>common_defs</name>
+    <enum>
+      <enum_name>MagmaVendorId</enum_name>
+      <type>u16</type>
+      <item name="Intel" value="0x8086"/>
+      <item name="AMD" value="0x1002"/>
+      <item name="ARM" value="0x13B5"/>
+      <item name="Qualcomm" value="0x5413"/>
+    </enum>
+    <enum>
+      <enum_name>MagmaStatus</enum_name>
+      <type>i32</type>
+      <item name="Success" value="0"/>
+      <item name="InternalError" value="-1"/>
+      <item name="InvalidArgs" value="-2"/>
+      <item name="AccessDenied" value="-3"/>
+      <item name="MemoryError" value="-4"/>
+      <item name="ContextKilled" value="-5"/>
+      <item name="TimedOut" value="-6"/>
+      <item name="Unimplemented" value="-7"/>
+    </enum>
+    <flags>
+      <flag>
+        <flag_name>MagmaQueueFlagBits</flag_name>
+        <type>u32</type>
+        <item name="GraphicsBit" value="0x00000001"/>
+        <item name="ComputeBit" value="0x00000002"/>
+        <item name="TransferBit" value="0x00000004"/>
+        <item name="SparseBindingBit" value="0x00000008"/>
+        <item name="ProtectedBit" value="0x00000010"/>
+        <item name="EncodeBit" value="0x00000020"/>
+        <item name="DecodeBit" value="0x00000040"/>
+      </flag>
+      <flag>
+        <flag_name>MagmaMemoryPropertyFlagBits</flag_name>
+        <type>u32</type>
+        <item name="DeviceLocalBit" value="0x00000001"/>
+        <item name="HostVisibleBit" value="0x00000002"/>
+        <item name="HostCoherentBit" value="0x00000004"/>
+        <item name="HostCachedBit" value="0x00000008"/>
+        <item name="LazilyAllocatedBit" value="0x00000010"/>
+        <item name="ProtectedBit" value="0x00000020"/>
+      </flag>
+      <flag>
+        <flag_name>MagmaMemoryHeapFlagBits</flag_name>
+        <type>u32</type>
+        <item name="DeviceLocalBit" value="0x00000001"/>
+        <item name="CpuVisibleBit" value="0x00000002"/>
+      </flag>
+    </flags>
+    <constants>
+      <constant>
+        <type>usize</type>
+        <item name="MAGMA_MAX_MEMORY_HEAPS" value="32"/>
+      </constant>
+      <constant>
+        <type>usize</type>
+        <item name="MAGMA_MAX_MEMORY_TYPES" value="16"/>
+      </constant>
+    </constants>
+    <structs>
+      <struct>
+        <name>MagmaMemoryType</name>
+        <member>
+          <type>u32</type>
+          <name>property_flags</name>
+        </member>
+        <member>
+          <type>u32</type>
+          <name>heap_idx</name>
+        </member>
+      </struct>
+      <struct>
+        <name>MagmaHeap</name>
+        <member>
+          <type>u64</type>
+          <name>heap_flags</name>
+        </member>
+        <member>
+          <type>u64</type>
+          <name>heap_idx</name>
+        </member>
+      </struct>
+      <struct>
+        <name>MagmaHeapBudget</name>
+        <member>
+          <type>u64</type>
+          <name>budget</name>
+        </member>
+        <member>
+          <type>u64</type>
+          <name>usage</name>
+        </member>
+      </struct>
+      <struct>
+        <name>MagmaMemoryProperties</name>
+        <member>
+          <type>u32</type>
+          <name>memory_type_count</name>
+        </member>
+        <member>
+          <type>u32</type>
+          <name>memory_heap_count</name>
+        </member>
+        <member>
+          <type>[MagmaMemoryType; MAGMA_MAX_MEMORY_TYPES]</type>
+          <name>memory_types</name>
+        </member>
+        <member>
+          <type>[MagmaHeap; MAGMA_MAX_MEMORY_HEAPS]</type>
+          <name>memory_heaps</name>
+        </member>
+      </struct>
+      <struct>
+        <name>MagmaQueueFamilyProperties</name>
+        <member>
+          <type>u64</type>
+          <name>budget</name>
+        </member>
+        <member>
+          <type>u64</type>
+          <name>usage</name>
+        </member>
+      </struct>
+    </structs>
+  </define>
+  <define>
+    <name>extensible_structs</name>
+    <extensible_structs>
+      <stypes>MagmaStructureType</stypes>
+      <extensible_struct>
+        <name>MagmaCreateBufferInfo</name>
+        <stype name="CreateBufferInfo" value="0x00000001"/>
+        <member>
+          <type>u32</type>
+          <name>memory_type_idx</name>
+        </member>
+        <member>
+          <type>u32</type>
+          <name>alignment</name>
+        </member>
+        <member>
+          <type>u32</type>
+          <name>common_flags</name>
+        </member>
+        <member>
+          <type>u32</type>
+          <name>vendor_flags</name>
+        </member>
+        <member>
+          <type>u64</type>
+          <name>size</name>
+        </member>
+      </extensible_struct>
+    </extensible_structs>
+  </define>
+  <define>
+    <name>ffi_defs</name>
+    <objects>
+      <object>
+        <ffi>magma_physical_device_t</ffi>
+        <rust>MagmaPhysicalDevice</rust>
+      </object>
+      <object>
+        <ffi>magma_device_t</ffi>
+        <rust>MagmaDevice</rust>
+      </object>
+      <object>
+        <ffi>magma_buffer_t</ffi>
+        <rust>MagmaBuffer</rust>
+      </object>
+      <object>
+        <ffi>magma_context_t</ffi>
+        <rust>MagmaContext</rust>
+      </object>
+      <object>
+        <ffi>magma_context_t</ffi>
+        <rust>MagmaContext</rust>
+      </object>
+    </objects>
+    <function>
+      <name>magma_create_buffer</name>
+      <return> MagmaStatus </return>
+      <member>
+        <type>magma_device_t</type>
+        <qualifier>mut ref</qualifier>
+        <name>device</name>
+      </member>
+      <member>
+        <type>MagmaCreateBufferInfo</type>
+        <qualifier>const ref</qualifier>
+        <name>buffer_info</name>
+      </member>
+      <member>
+        <type>magma_buffer_t</type>
+        <qualifier>ref ref</qualifier>
+        <name>buffer</name>
+      </member>
+    </function>
+    <function>
+      <name>magma_get_memory_properties</name>
+      <return> MagmaStatus </return>
+      <member>
+        <type>magma_device_t</type>
+        <qualifier>const ref</qualifier>
+        <name>device</name>
+      </member>
+      <member>
+        <type>MagmaMemoryProperties</type>
+        <qualifier>mut ref</qualifier>
+        <name>mem_props</name>
+      </member>
+    </function>
+    <function>
+      <name>magma_get_memory_heap_budget</name>
+      <return> MagmaStatus </return>
+      <member>
+        <type>magma_device_t</type>
+        <qualifier>const ref</qualifier>
+        <name>device</name>
+      </member>
+      <member>
+        <type>MagmaMemoryProperties</type>
+        <qualifier>mut ref</qualifier>
+        <name>mem_props</name>
+      </member>
+    </function>
+  </define>
+  <define>
+    <name>magmavirt_defs</name>
+    <protocol>
+      <protocol_name>MagmaVirt</protocol_name>
+      <request>
+        <opcode name="CreateConnection" value="0x00000001"/>
+        <member>
+          <type>u32</type>
+          <name>ring_resource_id</name>
+        </member>
+      </request>
+      <request>
+        <opcode name="CreateBuffer" value="0x00000002"/>
+        <member>
+          <type>u32</type>
+          <name>buffer_id</name>
+        </member>
+        <member>
+          <type>MagmaCreateBufferInfo</type>
+          <name>create_buffer_info</name>
+        </member>
+      </request>
+      <request>
+        <opcode name="DestroyBuffer" value="0x00000003"/>
+        <member>
+          <type>u32</type>
+          <name>buffer_id</name>
+        </member>
+      </request>
+      <request>
+        <opcode name="CreateContext" value="0x00000004"/>
+        <member>
+          <type>u32</type>
+          <name>ctx_id</name>
+        </member>
+      </request>
+      <request>
+        <opcode name="DestroyContext" value="0x00000005"/>
+        <member>
+          <type>u32</type>
+          <name>ctx_id</name>
+        </member>
+      </request>
+    </protocol>
+  </define>
+  <define>
+    <name>magma_protocol_defs</name>
+    <protocol>
+      <protocol_name>magma</protocol_name>
+      <request>
+        <opcode name="CreateConnection" value="0x00000001"/>
+      </request>
+      <request>
+        <opcode name="CreateBuffer" value="0x00000002"/>
+        <member>
+          <type>MagmaCreateBufferInfo</type>
+          <name>create_buffer_info</name>
+        </member>
+      </request>
+      <response>
+        <opcode name="OkNoData" value="0x10000001"/>
+      </response>
+      <response>
+        <opcode name="OkConnectionId" value="0x100000002"/>
+        <member>
+          <type>u32</type>
+          <name>connection_id</name>
+        </member>
+      </response>
+      <response>
+        <opcode name="OkBufferId" value="0x100000003"/>
+        <member>
+          <type>u32</type>
+          <name>buffer_id</name>
+        </member>
+      </response>
+    </protocol>
+  </define>
+  <generated_file>
+    <out_path>src/virtio/protocols/protocols/magma</out_path>
+    <file_name>common.rs</file_name>
+    <instantiate>extensible_structs</instantiate>
+    <file_type>Rust</file_type>
+    <instantiate>common_defs</instantiate>
+  </generated_file>
+  <generated_file>
+    <out_path>src/magma/ffi/include</out_path>
+    <file_name>magma_generated.h</file_name>
+    <file_type>header</file_type>
+    <instantiate>common_defs</instantiate>
+    <instantiate>extensible_structs</instantiate>
+    <instantiate>ffi_defs</instantiate>
+  </generated_file>
+  <generated_file>
+    <out_path>src/magma/ffi</out_path>
+    <file_name>ffi_generated.rs</file_name>
+    <file_type>ffi</file_type>
+    <include>mesa3d_protocols::protocols::magma::extensible_structs.rs</include>
+    <include>mesa3d_protocols::protocols::magma::common.rs</include>
+    <instantiate>ffi_defs</instantiate>
+  </generated_file>
+  <generated_file>
+    <out_path>src/virtio/protocols/protocols/magma</out_path>
+    <file_name>protocol.rs</file_name>
+    <file_type>protocol</file_type>
+    <include>mesa3d_protocols::protocols::magma::extensible_structs.rs</include>
+    <include>mesa3d_protocols::protocols::magma::common.rs</include>
+    <instantiate>extensible_structs</instantiate>
+    <instantiate>magma_protocol_defs</instantiate>
+  </generated_file>
+  <generated_file>
+    <out_path>src/virtio/protocols/protocols/magma</out_path>
+    <file_name>decoder.rs</file_name>
+    <file_type>decoder</file_type>
+    <include>mesa3d_protocols::protocols::magma::protocol.rs</include>
+    <include>mesa3d_protocols::protocols::magma::common.rs</include>
+    <instantiate>magma_protocol_defs</instantiate>
+  </generated_file>
+</api>

@@ -1,0 +1,27 @@
+{% include "copyright.jinja" %}
+
+use zerocopy::FromBytes;
+use zerocopy::Immutable;
+use zerocopy::IntoBytes;
+
+{%- for def in defs %}
+{%- if def.Constant %}
+{% include "protocol/constant.jinja" %}
+{% elif def.Enum %}
+{% include "protocol/enum.jinja" %}
+{% elif def.ExtensibleStructs %}
+{% set collection = def.ExtensibleStructs %}
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
+#[repr(u32)]
+pub enum {{ collection.stypes_name }} {
+    {% for s in collection.structs -%}
+    {{ s.stype.name }} = {{ s.stype.value }},
+    {% endfor %}
+}
+{% include "protocol/extensible_struct.jinja" %}
+{% elif def.Struct %}
+{% include "protocol/struct.jinja" %}
+{% elif def.Protocol %}
+{% include "protocol/protocol.jinja" %}
+{% endif %}
+{%- endfor %}

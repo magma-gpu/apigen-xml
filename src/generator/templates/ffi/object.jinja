@@ -1,0 +1,6 @@
+{% set o = def.Object %}
+#[repr(C)]
+pub struct {{ o.ffi }}_T {
+    _private: [u8; 0],
+}
+pub type {{ o.ffi }} = *mut {{ o.ffi }}_T;

@@ -1,0 +1,10 @@
+{% set collection = def.ExtensibleStructs %}
+{% for s in collection.structs -%}
+typedef struct {{ s.stype.name }} {
+    {{ collection.name }} stype;
+    const void* pNext;
+    {% for member in s.members -%}
+    {{ member.type_name }} {{ member.name }};
+    {% endfor %}
+} {{ s.stype.name }};
+{% endfor %}

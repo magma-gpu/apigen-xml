@@ -1,0 +1,9 @@
+{%- set f = def.Flag %}
+bitflags::bitflags! {
+    #[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
+    pub struct {{ f.name }}: {{ f.type_name }} {
+        {% for entry in f.entries -%}
+        const {{ entry.name }} = {{ entry.value }};
+        {% endfor -%}
+    }
+}
