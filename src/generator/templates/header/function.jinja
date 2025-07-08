@@ -1,0 +1,6 @@
+{% set f = def.Function %}
+{{ f.ret }} {{ f.name }}(
+    {% for member in f.members -%}
+    {{ member.qualifier }} {{ member.type_name }} {{ member.name }}{{ "," if not loop.last }}
+    {% endfor %}
+);

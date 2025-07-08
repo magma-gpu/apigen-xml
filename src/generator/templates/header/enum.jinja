@@ -1,0 +1,6 @@
+{% set e = def.Enum %}
+typedef enum {{ e.name }} {
+    {% for entry in e.entries -%}
+    {{ entry.name }} = {{ entry.value }},
+    {% endfor %}
+} {{ e.name }};

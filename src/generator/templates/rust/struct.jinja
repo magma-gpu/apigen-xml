@@ -1,0 +1,49 @@
+{% set s = def.Struct %}
+#[derive(Debug, Copy, Clone)]
+#[repr(C)]
+pub struct {{ s.name }}<'a> {
+    {% for member in s.members -%}
+    pub {{ member.name }}: {{ member.type_name }},
+    {% endfor %}
+    pub _marker: PhantomData<&'a ()>,
+}
+
+impl<'a> Default for {{ s.name }}<'a> {
+    fn default() -> Self {
+        Self {
+            {% for member in s.members -%}
+            {{ member.name }}: Default::default(),
+            {% endfor -%}
+            _marker: PhantomData,
+        }
+    }
+}
+
+impl<'a> {{ s.name }}<'a> {
+{%- set array_member_names = s.array_info | map(attribute='array_member_name') | list -%}
+{%- set count_member_names = s.array_info | map(attribute='count_member_name') | list -%}
+{% for member in s.members -%}
+{% if member.name not in array_member_names and member.name not in count_member_names %}
+    #[inline]
+    pub fn {{ member.name }}(mut self, {{ member.name }}: {{ member.type_name }}) -> Self {
+        self.{{ member.name }} = {{ member.name }};
+        self
+    }
+{% endif %}
+{%- endfor %}
+{% if s.array_info %}
+    {% for info in s.array_info -%}
+    #[inline]
+    pub fn {{ info.array_member_name }}(mut self, {{ info.array_member_name }}: &'_ [{{ info.array_base_type }}]) -> Self {
+        self.{{ info.count_member_name }} = {{ info.array_member_name }}.len() as _;
+        self.{{ info.array_member_name }}[..{{ info.array_member_name }}.len()].copy_from_slice({{ info.array_member_name }});
+        self
+    }
+
+    #[inline]
+    pub fn {{ info.array_member_name }}_as_slice(&self) -> &[ {{ info.array_base_type }} ] {
+        &self.{{ info.array_member_name }}[..self.{{ info.count_member_name }} as _]
+    }
+    {% endfor %}
+{% endif %}
+}

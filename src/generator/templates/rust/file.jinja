@@ -1,0 +1,13 @@
+{% include "copyright.jinja" %}
+
+use core::marker::PhantomData;
+
+{% for def in defs %}
+{% if def.Constant %}
+{% include "rust/constant.jinja" %}
+{% elif def.Enum %}
+{% include "rust/enum.jinja" %}
+{% elif def.Struct %}
+{% include "rust/struct.jinja" %}
+{% endif %}
+{% endfor %}

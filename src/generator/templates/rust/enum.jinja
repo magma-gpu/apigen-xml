@@ -1,0 +1,8 @@
+{% set e = def.Enum %}
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq)]
+#[repr({{ e.type_name }})]
+pub enum {{ e.name }} {
+    {% for entry in e.entries -%}
+    {{ entry.name }} = {{ entry.value }},
+    {% endfor %}
+}
